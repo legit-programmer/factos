@@ -199,3 +199,19 @@ def test_session_deletion_isolated(client, app):
     assert client.delete(f"/sessions/{sid}").status_code == 200
     assert not root.exists()
     assert client.get(f"/sessions/{other}").status_code == 200
+
+
+def test_rename_session_owner_only(client):
+    sid = login(client)
+    assert client.patch(f"/sessions/{sid}", json={"title": "Renamed"}).json()["title"] == "Renamed"
+    assert client.get(f"/sessions/{sid}").json()["title"] == "Renamed"
+    assert client.patch(f"/sessions/{sid}", json={"title": ""}).status_code == 422
+    assert (
+        client.patch(
+            f"/sessions/{sid}", headers={"origin": "https://evil.test"}, json={"title": "x"}
+        ).status_code
+        == 403
+    )
+    client.post("/auth/logout")
+    login(client, "two@example.com")
+    assert client.patch(f"/sessions/{sid}", json={"title": "Stolen"}).status_code == 404

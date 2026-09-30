@@ -1,8 +1,48 @@
-# Factos backend
+# Factos
 
-Initial Python backend implementation of `docs/backend-spec.md`. Backend only; the React client is outside scope.
+Document-grounded answering with hallucination checks: a Python backend (`backend/`, specified in
+`docs/backend-spec.md`) and a React client (`frontend/`, "Hallucination Lab").
 
-## Run
+## Frontend
+
+React 19 + TypeScript + Vite. Node 20+.
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173, proxies /api/* to the backend on 127.0.0.1:8000
+npm test           # span, citation, stream-reducer and SSE parser tests
+npm run build      # typecheck + production bundle in frontend/dist
+```
+
+Keep the backend's `FACTOS_ALLOWED_ORIGIN` at `http://localhost:5173` (the default). The dev proxy keeps
+requests same-origin, so the login cookie stays first-party and the backend sees the Vite origin on
+mutating requests. Set `FACTOS_BACKEND_URL` in `frontend/.env` to proxy elsewhere.
+
+For deployment, serve `frontend/dist` and route `/api/*` to the backend on the same origin (strip the
+`/api` prefix), or build with `VITE_API_BASE=https://backend.example` and set the backend's allowed origin to
+the frontend's exact origin.
+
+What the client does:
+
+- Email/password sign-up and login (15–128 character passwords), logout, and a 401 fallback to login.
+- Sessions sidebar with per-session contradicted/unverifiable counts, rename (double-click the title),
+  delete, and a collapsible rail. Sessions are created on the first question or upload and titled from it.
+- Knowledge base per session: upload PDF/DOCX/PPTX/Markdown, crawl a website (when Firecrawl is enabled),
+  see indexing status and unreadable-page warnings, retry failed sources, remove sources.
+- Both answers stream side by side from the single combined turn stream. The client reads it with `fetch`,
+  resumes with `Last-Event-ID`, ignores replayed duplicates, and falls back to the saved turn on 410.
+  Stop cancels the turn. Up to four images can be attached to a question.
+- Grounded answers render `[c_…]` markers as numbered footnotes with source locations and excerpts.
+- Ungrounded answers are highlighted from the server's exact UTF-16 spans: red for contradicted and yellow
+  for unverifiable. A finding card shows what the model said, what the sources say, the reason and the
+  evidence, and outlines the grounded sentence that cites the same evidence. Findings whose quote does not
+  match the text, and analyses whose hash differs from the displayed answer, are not drawn.
+- Queued, running, partial, failed and skipped checks are shown as such, with coverage, tool-call use and
+  checker notes, and a retry for failed or partial checks. Earlier turns collapse into summary rows.
+- Narrow screens switch between the two answers with a Grounded/Ungrounded toggle.
+
+## Backend
 
 Python 3.12+ on Linux, one process, one Uvicorn worker, one persistent disk volume.
 
@@ -31,6 +71,8 @@ Email identifiers are stripped and case-folded; no Gmail-specific alias rewritin
 
 ## Implemented behavior
 
+- `GET /sessions` includes `updated`, `active` and per-session contradicted/unverifiable counts for the
+  sidebar; `PATCH /sessions/{id}` renames a session (owner only, same title rules as creation).
 - SQLite users, cookie sessions, ownership, parent sessions, three distinct child histories, turns,
   source/chunk mappings, analyses, attachments and durable events.
 - Concurrent RAG/baseline generation with the same configured Gemini model/settings. Baseline never
@@ -88,5 +130,5 @@ Parser work runs in bounded threads. Cancellation waits for an active blocking p
 to finish before removing session files. Thread execution cannot forcibly stop a hung native parser;
 hard parser termination would require a separately bounded process worker.
 
-No frontend, model picker, distributed workers, automatic job resumption, hosted vector database,
+No model picker, distributed workers, automatic job resumption, hosted vector database,
 source revision-management workflow, password reset, or email delivery is included.
