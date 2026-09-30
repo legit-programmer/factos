@@ -1,4 +1,4 @@
-# Factos
+# Factos 
 
 Document-grounded answering with hallucination checks: a Python backend (`backend/`, specified in
 `docs/backend-spec.md`) and a React client (`frontend/`, "Hallucination Lab").
