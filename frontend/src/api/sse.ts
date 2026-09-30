@@ -1,4 +1,4 @@
-import { ApiError, url } from './client'
+import { ApiError, send, url } from './client'
 import type { TurnEvent } from './types'
 
 /** Incremental parser for the `text/event-stream` framing used by the turn stream. */
@@ -37,7 +37,7 @@ export async function readTurnEvents(
   signal: AbortSignal,
   onEvent: (event: TurnEvent) => void,
 ) {
-  const response = await fetch(url(eventsPath), {
+  const response = await send(url(eventsPath), {
     credentials: 'include',
     headers: { Accept: 'text/event-stream', 'Last-Event-ID': String(lastEventId) },
     signal,

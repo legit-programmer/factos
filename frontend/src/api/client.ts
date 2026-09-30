@@ -21,6 +21,16 @@ export class ApiError extends Error {
   }
 }
 
+/** The network layer; developer tools swap in an in-browser mock of the backend. */
+export type Transport = (input: string, init?: RequestInit) => Promise<Response>
+let transport: Transport = (input, init) => fetch(input, init)
+export function setTransport(next: Transport) {
+  transport = next
+}
+export function send(input: string, init?: RequestInit) {
+  return transport(input, init)
+}
+
 let onUnauthorized: () => void = () => {}
 export function setUnauthorizedHandler(handler: () => void) {
   onUnauthorized = handler
@@ -40,7 +50,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   }
   let response: Response
   try {
-    response = await fetch(url(path), init)
+    response = await send(url(path), init)
   } catch {
     throw new ApiError(0, 'network', 'Cannot reach the server. Check that the backend is running.', true)
   }

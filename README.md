@@ -23,6 +23,16 @@ For deployment, serve `frontend/dist` and route `/api/*` to the backend on the s
 `/api` prefix), or build with `VITE_API_BASE=https://backend.example` and set the backend's allowed origin to
 the frontend's exact origin.
 
+Developer tools: in `npm run dev` (or a build with `VITE_DEV_TOOLS=true`) a floating **Dev** button
+opens a panel whose **Mock backend** switch serves every API call from an in-browser simulation of the
+backend (also `?mock=1` / `?mock=0`). The mock keeps its own users, sessions and documents in localStorage,
+seeds a demo account (credentials shown in the panel), and mirrors the real routes, status codes and
+bodies: auth, sessions, source indexing, attachments, request-id deduplication, cancellation, turn-ordered
+fact checks, analysis retry, and the combined event stream with `Last-Event-ID` replay and 410 expiry. The
+panel sets simulation speed and the next question's outcome (grounded/ungrounded failure, failed, partial or
+slow check), toggles Firecrawl, and can drop open streams, expire replay, simulate a backend restart or
+reset the data.
+
 What the client does:
 
 - Email/password sign-up and login (15–128 character passwords), logout, and a 401 fallback to login.
