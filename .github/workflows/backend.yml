@@ -1,0 +1,33 @@
+name: Backend checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.lock
+      - name: Install parser system dependency
+        run: sudo apt-get update && sudo apt-get install -y libmagic1
+      - name: Install backend and test dependencies
+        run: |
+          python -m pip install -r requirements.lock
+          python -m pip install --no-deps -e .
+      - name: Lint
+        run: ruff check factos tests
+      - name: Test
+        run: pytest -q
+      - name: Compile
+        run: python -m compileall -q factos
