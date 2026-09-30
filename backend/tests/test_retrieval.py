@@ -90,3 +90,19 @@ def test_verification_uses_evidence_and_original_snapshot(client, app, provider)
     result = settle(client, sid, created["turn_id"])
     assert result["analysis"]["index_version_id"] == pinned
     assert result["analysis"]["findings"]
+
+
+def test_session_list_summarizes_findings(client, app, provider):
+    from conftest import settle
+
+    provider.mode = "contradiction"
+    sid = login(client)
+    empty = client.post("/sessions", json={"title": "Empty"}).json()["id"]
+    source, chunks = seed(app.state.db, sid, "Policy")
+    client.portal.call(app.state.retrieval.publish, sid, source, chunks)
+    created = client.post(f"/sessions/{sid}/turns", json={"request_id": "one", "text": "Warranty?"}).json()
+    settle(client, sid, created["turn_id"])
+    listed = {s["id"]: s for s in client.get("/sessions").json()["sessions"]}
+    assert listed[sid]["contradicted"] == 1 and listed[sid]["unverifiable"] == 0
+    assert listed[sid]["active"] is False and listed[sid]["updated"] >= listed[sid]["created"]
+    assert listed[empty]["contradicted"] == 0 and listed[empty]["updated"] == listed[empty]["created"]

@@ -56,7 +56,7 @@ def create_app(settings=None, providers=None):
         CORSMiddleware,
         allow_origins=[settings.allowed_origin],
         allow_credentials=True,
-        allow_methods=["GET", "POST", "DELETE"],
+        allow_methods=["GET", "POST", "PATCH", "DELETE"],
         allow_headers=["Content-Type", "Last-Event-ID"],
     )
 
@@ -204,12 +204,37 @@ def create_app(settings=None, providers=None):
 
     @app.get("/sessions")
     def list_sessions(user=Depends(current_user)):
+        sessions = db.all(
+            "SELECT s.id,s.title,s.active_index,s.created,COALESCE(MAX(t.created),s.created) AS updated,"
+            "COALESCE(MAX(t.rag_state IN ('pending','running') OR t.baseline_state IN ('pending','running')),0)"
+            " AS active FROM sessions s LEFT JOIN turns t ON t.session_id=s.id WHERE s.owner_id=?"
+            " GROUP BY s.id ORDER BY s.created DESC",
+            (user["user_id"],),
+        )
+        counts = {s["id"]: {"contradicted": 0, "unverifiable": 0} for s in sessions}
+        for row in db.all(
+            "SELECT t.session_id,a.result FROM analyses a JOIN turns t ON t.id=a.turn_id "
+            "JOIN sessions s ON s.id=t.session_id WHERE s.owner_id=?",
+            (user["user_id"],),
+        ):
+            for finding in json.loads(row["result"]).get("findings", []):
+                if finding.get("verdict") in {"contradicted", "unverifiable"}:
+                    counts[row["session_id"]][finding["verdict"]] += 1
         return {
-            "sessions": db.all(
-                "SELECT id,title,active_index,created FROM sessions WHERE owner_id=? ORDER BY created DESC",
-                (user["user_id"],),
-            )
+            "sessions": [
+                {**s, "active": bool(s["active"]), **counts[s["id"]]}
+                for s in sessions
+                if s["id"] not in runtime.deleting
+            ]
         }
+
+    @app.patch("/sessions/{session_id}")
+    def rename_session(session_id: str, body: SessionCreate, user=Depends(current_user)):
+        session_for(session_id, user)
+        db.execute(
+            "UPDATE sessions SET title=? WHERE id=? AND owner_id=?", (body.title, session_id, user["user_id"])
+        )
+        return {"id": session_id, "title": body.title}
 
     def saved_turn(turn):
         answers = db.all("SELECT * FROM answers WHERE turn_id=?", (turn["id"],))

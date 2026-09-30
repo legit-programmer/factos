@@ -24,6 +24,18 @@ Additional confirmed constraint: **Firecrawl only for web crawling**.
 2. Select Gemini/OpenAI model IDs and matching embedding dimensions/input limits; configure server keys.
 3. Run `python -m factos.check_providers` and a bounded Firecrawl ingestion smoke check.
 4. Manually inspect supported, contradicted, unverifiable, conflicting-source and multi-turn examples.
-5. Point the React client at the documented authenticated API and combined turn event stream.
+5. Run the React client (`frontend/`) against the configured backend and review a few real sessions.
+
+## Frontend
+
+The React client in `frontend/` implements the comparison UI: authentication, sessions, per-session
+knowledge base, both answer lanes streamed from the combined turn stream, citations, and
+contradicted/unverifiable highlights from the validated analysis spans.
+
+- 15 unit tests (Vitest) cover UTF-16 highlight slicing, repeated and overlapping spans, citation parsing,
+  event replay deduplication and SSE framing. Typecheck and production build pass.
+- Checked end to end in Chromium against the real backend, with scripted Gemini/embedding responses
+  standing in for live providers: registration, Markdown upload and indexing, two streamed turns with
+  verification, finding navigation, reload from saved state, stop mid-stream, logout, and the narrow layout.
 
 Local automated correctness checks do not certify the verifier's semantic judgments.
