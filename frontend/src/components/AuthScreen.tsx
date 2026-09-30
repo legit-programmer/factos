@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { ApiError, api } from '../api/client'
 import type { User } from '../api/types'
 import { GroundedDot, Logo, UngroundedDot } from './Marks'
+import { ThemeButton } from './ThemeButton'
 
 const MIN_PASSWORD = 15
 const MAX_PASSWORD = 128
@@ -45,6 +46,9 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: (user: User) 
 
   return (
     <main className="auth">
+      <div className="auth-theme">
+        <ThemeButton />
+      </div>
       <div className="auth-card">
         <div className="brand auth-brand">
           <Logo size={30} />

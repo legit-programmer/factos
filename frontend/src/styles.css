@@ -31,6 +31,124 @@
   --shadow-card: 0 1px 2px rgba(92, 64, 36, 0.05), 0 12px 32px -12px rgba(92, 64, 36, 0.16);
   --shadow-float: 0 2px 4px rgba(92, 64, 36, 0.04), 0 16px 40px -14px rgba(92, 64, 36, 0.22);
   --radius: 10px;
+
+  --hover: rgba(120, 90, 60, 0.08);
+  --session-hover: rgba(255, 253, 249, 0.55);
+  --question-hover: #faf0e2;
+  --notice: #fbf1df;
+  --excerpt-bg: rgba(238, 240, 220, 0.55);
+  --chip-hover: #f1e5d3;
+  --sketch-rag: #fdf5ea;
+  --sketch-line: #ecdfca;
+  --placeholder: #9b8d80;
+  --send-idle: #efe3d1;
+  --scrim: rgba(45, 37, 33, 0.28);
+  --drop-active: #fff5f7;
+  --warn-ink: #8a6515;
+  --toast-bg: #2d2521;
+  --toast-ink: #fbf4ea;
+  color-scheme: light;
+}
+
+/* Dark theme: follows the system unless the reader picked a theme (data-theme on <html>). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ink: #efe5d8;
+    --ink-soft: #d8ccbc;
+    --muted: #a49584;
+    --faint: #7d7063;
+    --line: #3a312a;
+    --line-strong: #4b4037;
+
+    --pink: #df5a82;
+    --pink-hover: #e97096;
+    --pink-ink: #f28eab;
+    --pink-soft: rgba(223, 90, 130, 0.3);
+    --pink-edge: #e8779a;
+    --yellow-soft: rgba(229, 189, 72, 0.3);
+    --yellow-edge: #d8b24a;
+    --olive: #a8b279;
+    --olive-ink: #c5ce95;
+    --olive-soft: rgba(168, 178, 121, 0.18);
+    --olive-edge: #939d64;
+
+    --bg-sidebar: #1e1915;
+    --bg-header: #221c18;
+    --bg-rag: #1a1613;
+    --bg-base: #221c17;
+    --bg-question: #26201b;
+    --card: #2b241f;
+    --chip: #342c25;
+
+    --hover: rgba(255, 240, 220, 0.07);
+    --session-hover: rgba(255, 240, 220, 0.05);
+    --question-hover: #2c251f;
+    --notice: #30281d;
+    --excerpt-bg: rgba(168, 178, 121, 0.1);
+    --chip-hover: #3d342c;
+    --sketch-rag: #241e19;
+    --sketch-line: #3d342b;
+    --placeholder: #86786a;
+    --send-idle: #3a3129;
+    --scrim: rgba(0, 0, 0, 0.5);
+    --drop-active: rgba(223, 90, 130, 0.1);
+    --warn-ink: #e0bd62;
+    --toast-bg: #efe5d8;
+    --toast-ink: #1e1915;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -12px rgba(0, 0, 0, 0.55);
+    --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.25), 0 16px 40px -14px rgba(0, 0, 0, 0.65);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --ink: #efe5d8;
+  --ink-soft: #d8ccbc;
+  --muted: #a49584;
+  --faint: #7d7063;
+  --line: #3a312a;
+  --line-strong: #4b4037;
+
+  --pink: #df5a82;
+  --pink-hover: #e97096;
+  --pink-ink: #f28eab;
+  --pink-soft: rgba(223, 90, 130, 0.3);
+  --pink-edge: #e8779a;
+  --yellow-soft: rgba(229, 189, 72, 0.3);
+  --yellow-edge: #d8b24a;
+  --olive: #a8b279;
+  --olive-ink: #c5ce95;
+  --olive-soft: rgba(168, 178, 121, 0.18);
+  --olive-edge: #939d64;
+
+  --bg-sidebar: #1e1915;
+  --bg-header: #221c18;
+  --bg-rag: #1a1613;
+  --bg-base: #221c17;
+  --bg-question: #26201b;
+  --card: #2b241f;
+  --chip: #342c25;
+
+  --hover: rgba(255, 240, 220, 0.07);
+  --session-hover: rgba(255, 240, 220, 0.05);
+  --question-hover: #2c251f;
+  --notice: #30281d;
+  --excerpt-bg: rgba(168, 178, 121, 0.1);
+  --chip-hover: #3d342c;
+  --sketch-rag: #241e19;
+  --sketch-line: #3d342b;
+  --placeholder: #86786a;
+  --send-idle: #3a3129;
+  --scrim: rgba(0, 0, 0, 0.5);
+  --drop-active: rgba(223, 90, 130, 0.1);
+  --warn-ink: #e0bd62;
+  --toast-bg: #efe5d8;
+  --toast-ink: #1e1915;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -12px rgba(0, 0, 0, 0.55);
+  --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.25), 0 16px 40px -14px rgba(0, 0, 0, 0.65);
+  color-scheme: dark;
 }
 
 *,
@@ -108,7 +226,7 @@ button:disabled {
 }
 
 .icon-button:hover:not(:disabled) {
-  background: rgba(120, 90, 60, 0.08);
+  background: var(--hover);
 }
 
 .link-button {
@@ -295,7 +413,7 @@ button:disabled {
 }
 
 .session-item:hover {
-  background: rgba(255, 253, 249, 0.55);
+  background: var(--session-hover);
 }
 
 .session-item.is-current {
@@ -414,6 +532,22 @@ button:disabled {
   padding: 0 4px 0 12px;
   color: var(--muted);
   font-size: 12.5px;
+}
+
+.account-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.auth-theme {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+}
+
+.is-collapsed .account-actions {
+  flex-direction: column;
+  gap: 4px;
 }
 
 .account-email {
@@ -602,7 +736,7 @@ button:disabled {
 }
 
 .pill-warn {
-  color: #8a6515;
+  color: var(--warn-ink);
 }
 
 @keyframes pulse {
@@ -636,7 +770,7 @@ button:disabled {
 }
 
 button.question-row:hover {
-  background: #faf0e2;
+  background: var(--question-hover);
 }
 
 .question-row.is-static {
@@ -723,7 +857,7 @@ button.question-row .question-text {
   margin: 0;
   padding: 10px 32px;
   border-bottom: 1px solid var(--line);
-  background: #fbf1df;
+  background: var(--notice);
   color: var(--ink-soft);
   font-size: 13px;
 }
@@ -832,7 +966,7 @@ button.question-row .question-text {
 }
 
 .lane-warning {
-  color: #8a6515;
+  color: var(--warn-ink);
 }
 
 .citations {
@@ -876,7 +1010,7 @@ button.question-row .question-text {
   padding: 10px 14px;
   border-left: 2px solid var(--olive-edge);
   border-radius: 0 8px 8px 0;
-  background: rgba(238, 240, 220, 0.55);
+  background: var(--excerpt-bg);
   color: var(--ink-soft);
   font-family: var(--serif);
   font-size: 14.5px;
@@ -972,7 +1106,7 @@ p.analysis-status {
 }
 
 .analysis-status.is-partial .coverage {
-  color: #8a6515;
+  color: var(--warn-ink);
 }
 
 .notes summary {
@@ -1011,7 +1145,7 @@ p.analysis-status {
 }
 
 .is-yellow .finding-kind {
-  color: #8a6515;
+  color: var(--warn-ink);
 }
 
 .finding-position {
@@ -1037,7 +1171,7 @@ p.analysis-status {
 }
 
 .finding-nav button:hover:not(:disabled) {
-  background: #f1e5d3;
+  background: var(--chip-hover);
 }
 
 .finding-nav button:disabled {
@@ -1156,7 +1290,7 @@ button.finding-source:hover {
 }
 
 .sketch-rag {
-  background: #fdf5ea;
+  background: var(--sketch-rag);
 }
 
 .sketch-baseline {
@@ -1168,7 +1302,7 @@ button.finding-source:hover {
   display: block;
   height: 9px;
   border-radius: 5px;
-  background: #ecdfca;
+  background: var(--sketch-line);
 }
 
 .sketch-line {
@@ -1292,7 +1426,7 @@ button.finding-source:hover {
 }
 
 .composer textarea::placeholder {
-  color: #9b8d80;
+  color: var(--placeholder);
 }
 
 .composer textarea:disabled {
@@ -1314,7 +1448,7 @@ button.finding-source:hover {
   height: 44px;
   border: 0;
   border-radius: 50%;
-  background: #efe3d1;
+  background: var(--send-idle);
   color: var(--ink-soft);
   transition: background-color 0.15s ease;
 }
@@ -1369,8 +1503,8 @@ button.finding-source:hover {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--ink);
-  color: #fff;
+  background: var(--toast-bg);
+  color: var(--toast-ink);
 }
 
 /* ---------- Knowledge base ---------- */
@@ -1382,7 +1516,7 @@ button.finding-source:hover {
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(45, 37, 33, 0.28);
+  background: var(--scrim);
 }
 
 .modal {
@@ -1439,7 +1573,7 @@ button.finding-source:hover {
 
 .dropzone.is-dragging {
   border-color: var(--pink);
-  background: #fff5f7;
+  background: var(--drop-active);
 }
 
 .website-form {
@@ -1662,8 +1796,8 @@ button.finding-source:hover {
   gap: 10px;
   padding: 12px 8px 12px 16px;
   border-radius: 12px;
-  background: var(--ink);
-  color: #fbf4ea;
+  background: var(--toast-bg);
+  color: var(--toast-ink);
   font-size: 13.5px;
   box-shadow: var(--shadow-float);
 }
@@ -1674,7 +1808,7 @@ button.finding-source:hover {
 }
 
 .toast .icon-button {
-  color: #fbf4ea;
+  color: var(--toast-ink);
   width: 28px;
   height: 28px;
 }
@@ -1718,7 +1852,7 @@ button.finding-source:hover {
     inset: 0;
     z-index: 25;
     display: block;
-    background: rgba(45, 37, 33, 0.25);
+    background: var(--scrim);
   }
 
   /* The rail layout never applies off-canvas. */
@@ -1927,8 +2061,8 @@ button.finding-source:hover {
 
 .devtools-button.is-mock {
   border-color: transparent;
-  background: var(--ink);
-  color: #fbf4ea;
+  background: var(--toast-bg);
+  color: var(--toast-ink);
 }
 
 .devtools-dot {

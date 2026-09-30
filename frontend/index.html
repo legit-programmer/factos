@@ -6,6 +6,13 @@
     <meta name="theme-color" content="#f6ecdc" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Hallucination Lab</title>
+    <script>
+      // Apply a saved theme before first paint to avoid a light flash.
+      try {
+        var theme = localStorage.getItem('factos.theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

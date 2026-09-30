@@ -51,6 +51,8 @@ What the client does:
 - Queued, running, partial, failed and skipped checks are shown as such, with coverage, tool-call use and
   checker notes, and a retry for failed or partial checks. Earlier turns collapse into summary rows.
 - Narrow screens switch between the two answers with a Grounded/Ungrounded toggle.
+- Dark mode follows the system setting; the theme button (sidebar footer, or the login screen) cycles
+  System, Light and Dark and remembers the choice.
 
 ## Backend
 

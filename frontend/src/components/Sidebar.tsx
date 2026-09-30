@@ -2,6 +2,7 @@ import { Library, LogOut, PanelLeft, Plus, Trash2, X } from 'lucide-react'
 import type { SessionSummary, Source } from '../api/types'
 import { cleanTitle, dateLabel } from '../lib/text'
 import { Logo, Swatch } from './Marks'
+import { ThemeButton } from './ThemeButton'
 
 interface Props {
   collapsed: boolean
@@ -120,9 +121,12 @@ export function Sidebar(props: Props) {
           <span className="account-email" title={props.email}>
             {props.email}
           </span>
-          <button type="button" className="icon-button" onClick={props.onLogout} aria-label="Log out" title="Log out">
-            <LogOut size={15} />
-          </button>
+          <span className="account-actions">
+            <ThemeButton />
+            <button type="button" className="icon-button" onClick={props.onLogout} aria-label="Log out" title="Log out">
+              <LogOut size={15} />
+            </button>
+          </span>
         </div>
       </div>
     </aside>
