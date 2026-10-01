@@ -105,7 +105,10 @@ describe('labels', () => {
     expect(deriveTitle('When did Webb launch?')).toBe('Webb launch')
     expect(
       deriveTitle('When and how did the James Webb Space Telescope launch, and where does it operate today?'),
-    ).toBe('James Webb Space Telescope launch')
+    ).toBe('James Webb Space')
+    expect(deriveTitle('is he pursuing bachelors')).toBe('Pursuing bachelors')
+    expect(deriveTitle('who is siddique khan')).toBe('Siddique khan')
+    expect(deriveTitle('what is it')).toBe('What is it')
   })
 
   it('labels dates relative to today', () => {

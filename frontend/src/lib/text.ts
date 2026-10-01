@@ -155,21 +155,26 @@ export function evidenceLabel(evidence: Pick<Evidence, 'title' | 'locator'>) {
 
 // ---------- Sessions ----------
 
-const LEADING = new Set(
-  'what when where who whom whose why how which and or did does do is are was were can could would should will the a an tell me please explain describe about of'.split(
-    ' ',
-  ),
+const FILLER = new Set(
+  (
+    'what when where who whom whose why how which and or did does do is are was were can could would should will ' +
+    'the a an tell me please explain describe about of to in on at for with from by be been has have had ' +
+    'i you he she it we they my your his her its our their this that these those any some all'
+  ).split(' '),
 )
 
-/** A short sidebar title from the first question: "When did Webb launch?" → "Webb launch". */
+/** A very short title from the first question: "Who is Siddique Khan?" → "Siddique Khan". */
 export function deriveTitle(question: string) {
   const firstClause = question.trim().split(/[?.!,;:\n]/)[0] ?? ''
   const words = firstClause.split(/\s+/).filter(Boolean)
-  let index = 0
-  while (index < words.length - 1 && LEADING.has(words[index].toLowerCase())) index++
-  const picked = words.slice(index, index + 6).join(' ')
-  const title = picked || question.trim().slice(0, 60) || 'New session'
-  return (title[0].toUpperCase() + title.slice(1)).slice(0, 80)
+  const keywords = words.filter((word) => !FILLER.has(word.toLowerCase()))
+  let title = ''
+  for (const word of (keywords.length ? keywords : words).slice(0, 3)) {
+    if (title && title.length + word.length + 1 > 28) break
+    title = title ? `${title} ${word}` : word
+  }
+  title = (title || question.trim()).slice(0, 28).trim() || 'New session'
+  return title[0].toUpperCase() + title.slice(1)
 }
 
 export function dateLabel(epochSeconds: number, now = new Date()) {

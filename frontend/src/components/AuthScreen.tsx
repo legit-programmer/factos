@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError, api } from '../api/client'
 import type { User } from '../api/types'
-import { GroundedDot, Logo, UngroundedDot } from './Marks'
+import { Logo } from './Marks'
 import { ThemeButton } from './ThemeButton'
 
 const MIN_PASSWORD = 15
@@ -55,8 +55,8 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: (user: User) 
           <span className="brand-name">Hallucination Lab</span>
         </div>
         <p className="auth-lede">
-          Ask once, get two answers: one <GroundedDot size={9} /> grounded in your documents, one{' '}
-          <UngroundedDot size={12} /> from memory — then see which claims your sources contradict.
+          Ask once, get two answers: one grounded in your documents, one{' '}
+          from memory — then see which claims your sources contradict.
         </p>
         <form onSubmit={submit} className="auth-form" noValidate>
           <label>

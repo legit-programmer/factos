@@ -1,4 +1,6 @@
 :root {
+  /* Faint diagonal hatch marking the ungrounded (unverified) lane. Fixed to the viewport so adjacent cells line up. */
+  --hatch-layer: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 10px);
   --ink: #2d2521;
   --ink-soft: #4a3f38;
   --muted: #7f7064;
@@ -47,6 +49,10 @@
   --warn-ink: #8a6515;
   --toast-bg: #2d2521;
   --toast-ink: #fbf4ea;
+  --glass: rgba(255, 252, 247, 0.28);
+  --hatch: rgba(120, 90, 60, 0.07);
+  --glass-edge: rgba(150, 120, 90, 0.18);
+  --glass-sheen: rgba(255, 255, 255, 0.6);
   color-scheme: light;
 }
 
@@ -95,6 +101,10 @@
     --warn-ink: #e0bd62;
     --toast-bg: #efe5d8;
     --toast-ink: #1e1915;
+    --glass: rgba(34, 28, 24, 0.32);
+    --hatch: rgba(255, 240, 220, 0.035);
+    --glass-edge: rgba(255, 240, 220, 0.14);
+    --glass-sheen: rgba(255, 240, 220, 0.06);
 
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -12px rgba(0, 0, 0, 0.55);
     --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.25), 0 16px 40px -14px rgba(0, 0, 0, 0.65);
@@ -145,6 +155,10 @@
   --warn-ink: #e0bd62;
   --toast-bg: #efe5d8;
   --toast-ink: #1e1915;
+  --hatch: rgba(255, 240, 220, 0.035);
+  --glass: rgba(34, 28, 24, 0.32);
+  --glass-edge: rgba(255, 240, 220, 0.14);
+  --glass-sheen: rgba(255, 240, 220, 0.06);
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -12px rgba(0, 0, 0, 0.55);
   --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.25), 0 16px 40px -14px rgba(0, 0, 0, 0.65);
@@ -282,17 +296,6 @@ button:disabled {
 /* ---------- Marks ---------- */
 
 .logo {
-  flex: none;
-}
-
-.dot-grounded {
-  display: inline-block;
-  flex: none;
-  border-radius: 50%;
-  background: var(--olive);
-}
-
-.dot-ungrounded {
   flex: none;
 }
 
@@ -608,7 +611,7 @@ button:disabled {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: linear-gradient(to right, var(--bg-rag) 50%, var(--bg-base) 50%);
+  background: var(--bg-base);
 }
 
 .session-header {
@@ -657,7 +660,9 @@ button:disabled {
 .columns-head {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 16px;
   flex: none;
+  padding: 0 24px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -666,16 +671,9 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  height: 80px;
-  padding: 0 32px;
-}
-
-.column-rag {
-  background: var(--bg-rag);
-}
-
-.column-baseline {
-  background: var(--bg-base);
+  height: 52px;
+  /* Card border + padding, so headings line up with the answer text below. */
+  padding: 0 29px;
 }
 
 .column-head h2 {
@@ -683,9 +681,10 @@ button:disabled {
   align-items: center;
   gap: 14px;
   margin: 0;
-  font-size: 28px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  color: var(--ink-soft);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .pill {
@@ -865,6 +864,8 @@ button.question-row .question-text {
 .turn-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 20px 24px 24px;
 }
 
 .turn:not(.is-latest) .turn-grid {
@@ -881,7 +882,26 @@ button.question-row .question-text {
 }
 
 .cell-baseline {
-  background: var(--bg-base);
+  background-color: var(--bg-base);
+  background-image: var(--hatch-layer);
+  background-attachment: fixed;
+}
+
+/* Answers as cards: faint olive outline for grounded, faint pink for ungrounded. */
+.turn-grid .cell {
+  padding: 24px 28px 30px;
+  border: 1px solid;
+  border-radius: 14px;
+  background-color: var(--card);
+  box-shadow: 0 1px 2px rgba(92, 64, 36, 0.04), 0 8px 24px -16px rgba(92, 64, 36, 0.2);
+}
+
+.turn-grid .cell-rag {
+  border-color: color-mix(in srgb, var(--olive) 40%, transparent);
+}
+
+.turn-grid .cell-baseline {
+  border-color: color-mix(in srgb, var(--pink) 30%, transparent);
 }
 
 .answer {
@@ -1399,9 +1419,18 @@ button.finding-source:hover {
 
 .composer {
   width: min(780px, 100%);
+  border: 1px solid var(--glass-edge);
   border-radius: 32px;
   background: var(--bg-rag);
-  box-shadow: var(--shadow-float);
+  box-shadow: inset 0 1px 0 var(--glass-sheen), var(--shadow-float);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .composer {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(6px) saturate(1.4);
+    backdrop-filter: blur(6px) saturate(1.4);
+  }
 }
 
 .composer-row {
@@ -1897,13 +1926,6 @@ button.finding-source:hover {
     grid-column: 1;
   }
 
-  .session {
-    background: var(--bg-rag);
-  }
-
-  .session.lane-baseline {
-    background: var(--bg-base);
-  }
 
   .session-header {
     height: auto;
@@ -1953,14 +1975,18 @@ button.finding-source:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .columns-head {
+    padding: 0 12px;
+  }
+
   .column-head {
-    height: 60px;
-    padding: 0 16px;
+    height: 48px;
+    padding: 0 19px;
   }
 
   .column-head h2 {
     gap: 10px;
-    font-size: 22px;
+    font-size: 15px;
   }
 
   .lane-rag .column-baseline,
@@ -1986,6 +2012,14 @@ button.finding-source:hover {
 
   .cell {
     padding: 20px 16px 28px;
+  }
+
+  .turn-grid {
+    padding: 12px 12px 16px;
+  }
+
+  .turn-grid .cell {
+    padding: 18px 18px 24px;
   }
 
   .answer {
@@ -2272,5 +2306,246 @@ button.finding-source:hover {
   .devtools {
     right: 12px;
     bottom: 96px;
+  }
+}
+
+/* ---------- Micro-animations ---------- */
+/* Entrance keyframes only define the start state, so hover/active styles take over once they finish. */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes mark-in {
+  from {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+/* Answer cards rise in, the ungrounded one a beat later. */
+.turn-grid .cell {
+  animation: rise-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.turn-grid .cell-baseline {
+  animation-delay: 0.06s;
+}
+
+/* Fact-check highlights wash in when the check lands. */
+.finding {
+  animation: mark-in 0.6s ease-out backwards;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.finding-card,
+.excerpt,
+.analysis-status,
+.notes ul {
+  animation: fade-in 0.25s ease-out backwards;
+}
+
+.toast {
+  animation: toast-in 0.25s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+/* Buttons: gentle lift on hover, press-in on click. */
+.send,
+.chip,
+.chip-count,
+.icon-button,
+.link-button,
+.citation-label {
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+}
+
+.send.is-ready:hover {
+  transform: scale(1.05);
+}
+
+.send:active:not(:disabled),
+.chip:active,
+.chip-count:active,
+.icon-button:active:not(:disabled),
+.link-button:active {
+  transform: scale(0.95);
+}
+
+/* Composer lifts slightly while typing. */
+.composer {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.composer:focus-within {
+  box-shadow: inset 0 1px 0 var(--glass-sheen), 0 2px 6px rgba(92, 64, 36, 0.06), 0 20px 48px -16px rgba(92, 64, 36, 0.3);
+}
+
+/* Collapsed questions: soft hover and a chevron nudge. */
+.question-row {
+  transition: background-color 0.15s ease;
+}
+
+.question-row .chevron {
+  transition: transform 0.2s ease;
+}
+
+button.question-row:hover .chevron {
+  transform: translateY(2px);
+}
+
+button.question-row[aria-expanded='true']:hover .chevron {
+  transform: translateY(-2px);
+}
+
+.pill {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Send burst: on send, a faded copy of the question lifts out of the composer, splits in two,
+   and each copy drifts into its lane (olive for grounded, pink for ungrounded) and dissolves.
+   Horizontal and vertical motion use separate easings so the paths curve. */
+.send-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.burst-ghost {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  max-width: min(320px, 40%);
+  overflow: hidden;
+  padding: 7px 14px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-family: var(--serif);
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  translate: -50% 0;
+  opacity: 0;
+  animation:
+    ghost-x 0.95s cubic-bezier(0.45, 0, 0.25, 1) forwards,
+    ghost-y 0.95s cubic-bezier(0.2, 0.6, 0.3, 1) forwards,
+    ghost-fade 0.95s ease-out forwards;
+}
+
+.burst-rag {
+  --burst-to: 25%;
+  border-color: color-mix(in srgb, var(--olive) 45%, transparent);
+  background: color-mix(in srgb, var(--olive-soft) 85%, transparent);
+  color: var(--olive-ink);
+}
+
+.burst-baseline {
+  --burst-to: 75%;
+  border-color: color-mix(in srgb, var(--pink) 35%, transparent);
+  background: color-mix(in srgb, var(--pink-soft) 60%, transparent);
+  color: var(--pink-ink);
+}
+
+/* Both copies rise together as one, then part ways. */
+@keyframes ghost-x {
+  0%,
+  28% {
+    left: 50%;
+  }
+  to {
+    left: var(--burst-to);
+  }
+}
+
+@keyframes ghost-y {
+  0% {
+    bottom: 84px;
+  }
+  28% {
+    bottom: 140px;
+  }
+  to {
+    bottom: 60%;
+  }
+}
+
+@keyframes ghost-fade {
+  0% {
+    opacity: 0;
+    scale: 0.94;
+  }
+  18% {
+    opacity: 1;
+    scale: 1;
+  }
+  70% {
+    opacity: 0.9;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    scale: 0.92;
+    filter: blur(4px);
+  }
+}
+
+@media (max-width: 860px) {
+  /* One lane on screen: the copies only part slightly as they rise. */
+  .burst-rag {
+    --burst-to: 38%;
+  }
+
+  .burst-baseline {
+    --burst-to: 62%;
+  }
+
+  .burst-ghost {
+    max-width: 46%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .send-burst {
+    display: none;
+  }
+
+  .turn-grid .cell,
+  .finding,
+  .finding-card,
+  .excerpt,
+  .analysis-status,
+  .notes ul,
+  .toast {
+    animation: none;
+  }
+
+  .send,
+  .chip,
+  .chip-count,
+  .icon-button,
+  .link-button,
+  .question-row .chevron {
+    transform: none !important;
   }
 }

@@ -17,7 +17,6 @@ import {
 } from '../lib/turns'
 import { Composer } from './Composer'
 import { EmptyState } from './EmptyState'
-import { GroundedDot, UngroundedDot } from './Marks'
 import { StatusPill, groundedStatus, ungroundedStatus } from './StatusPill'
 import { useToast } from './Toast'
 import { TurnBlock } from './TurnBlock'
@@ -153,6 +152,8 @@ export function SessionView(props: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [mobileLane, setMobileLane] = useState<'rag' | 'baseline'>('rag')
   const [editingTitle, setEditingTitle] = useState(false)
+  // Set on every send; the id keys the burst so its animation restarts.
+  const [burst, setBurst] = useState<{ id: number; text: string } | null>(null)
   const adopted = useRef<string | null>(null)
   const streams = useRef(new Map<string, AbortController>())
   const settledSeen = useRef(new Set<string>())
@@ -268,6 +269,8 @@ export function SessionView(props: Props) {
         optimistic: true,
       }
       dispatch({ type: 'add', turn: temp })
+      const ghost = text || 'Image question'
+      setBurst((b) => ({ id: (b?.id ?? 0) + 1, text: ghost.length > 48 ? `${ghost.slice(0, 47).trimEnd()}…` : ghost }))
       try {
         const title = deriveTitle(text || 'Image question')
         const id = sessionId ?? (adopted.current = await props.ensureSession(title))
@@ -398,13 +401,13 @@ export function SessionView(props: Props) {
       <div className="columns-head">
         <div className="column-head column-rag">
           <h2>
-            <GroundedDot /> Grounded
+            Grounded
           </h2>
           {latest && <StatusPill lane="rag" status={groundedStatus(latest)} />}
         </div>
         <div className="column-head column-baseline">
           <h2>
-            <UngroundedDot /> Ungrounded
+            Ungrounded
           </h2>
           {latest && <StatusPill lane="baseline" status={ungroundedStatus(latest)} />}
         </div>
@@ -446,6 +449,13 @@ export function SessionView(props: Props) {
       {busy && latest && latest.analysisState === 'pending' && (
         <div className="factcheck-note">
           <ClockIcon /> Fact check runs when both answers finish
+        </div>
+      )}
+
+      {burst && (
+        <div key={burst.id} className="send-burst" aria-hidden="true">
+          <span className="burst-ghost burst-rag">{burst.text}</span>
+          <span className="burst-ghost burst-baseline">{burst.text}</span>
         </div>
       )}
 

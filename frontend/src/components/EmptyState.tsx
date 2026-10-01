@@ -1,5 +1,3 @@
-import { GroundedDot, UngroundedDot } from './Marks'
-
 export function EmptyState({
   hasSources,
   onOpenKnowledgeBase,
@@ -26,7 +24,7 @@ export function EmptyState({
         </div>
         <div className="empty-foot">
           <p className="empty-caption">
-            <GroundedDot size={8} /> Checks your documents, cites its sources
+            Checks your documents, cites its sources
           </p>
           {!hasSources && (
             <button type="button" className="link-button empty-action" onClick={onOpenKnowledgeBase}>
@@ -51,7 +49,7 @@ export function EmptyState({
           <i style={{ width: '43%' }} />
         </div>
         <p className="empty-caption">
-          <UngroundedDot size={11} /> Answers from memory, then gets fact-checked
+          Answers from memory, then gets fact-checked
         </p>
       </div>
     </div>
