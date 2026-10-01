@@ -95,17 +95,19 @@ class Retrieval:
                 }
                 (stage / "manifest.json").write_text(dump(manifest))
                 for file in stage.iterdir():
-                    with file.open("rb") as handle:
+                    # Windows can only flush handles opened for writing.
+                    with file.open("r+b") as handle:
                         os.fsync(handle.fileno())
                 check = faiss.read_index(str(stage / "index.faiss"))
                 if check.ntotal != len(rows) or check.d != dimension:
                     raise ValueError("snapshot integrity failed")
                 os.rename(stage, final)
-                fd = os.open(parent, os.O_RDONLY)
-                try:
-                    os.fsync(fd)
-                finally:
-                    os.close(fd)
+                if os.name != "nt":  # Windows cannot open or fsync directories.
+                    fd = os.open(parent, os.O_RDONLY)
+                    try:
+                        os.fsync(fd)
+                    finally:
+                        os.close(fd)
                 conn.execute(
                     "INSERT INTO snapshots VALUES(?,?,?,?)", (version, session_id, dump(manifest), str(final))
                 )

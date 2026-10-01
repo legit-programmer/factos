@@ -11,6 +11,18 @@ from openai import AsyncOpenAI
 from .schemas import RawAnalysis
 
 
+def without_max_items(schema):
+    # Gemini rejects array caps as too many decoding states; RawAnalysis still enforces them on parse.
+    if isinstance(schema, dict):
+        return {k: without_max_items(v) for k, v in schema.items() if k != "maxItems"}
+    if isinstance(schema, list):
+        return [without_max_items(v) for v in schema]
+    return schema
+
+
+VERIFIER_SCHEMA = without_max_items(RawAnalysis.model_json_schema())
+
+
 class Providers:
     def __init__(self, settings):
         self.settings = settings
@@ -143,7 +155,7 @@ class Providers:
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             tools=[types.Tool(function_declarations=declarations)] if tools_enabled else None,
             response_mime_type=None if tools_enabled else "application/json",
-            response_json_schema=None if tools_enabled else RawAnalysis.model_json_schema(),
+            response_json_schema=None if tools_enabled else VERIFIER_SCHEMA,
         )
         async with self.slots:
             async with asyncio.timeout(self.settings.model_timeout):
